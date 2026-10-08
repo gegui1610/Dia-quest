@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Picly</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#000;--card:#08061f;--ink:#f2f0ff;--mut:#8f98b3;--line:#1f1a58;--acc:#2563eb;--accl:#7aa5ff;--ok:#22c55e;--okbg:#06301a;--ok2:#0a1d12;--ok2l:#2f7a4a;--no:#ef4444;--nobg:#2e0b0b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html,body{margin:0}html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -88,7 +88,7 @@ input{width:100%;background:var(--card);border:1.5px solid var(--line);border-ra
 textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:13px;color:var(--ink);font:inherit;margin-bottom:10px;min-height:70px;resize:vertical}.row{display:flex;gap:8px;margin:10px 0}.qc{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}.qc input,.qc textarea{background:var(--bg);margin-bottom:8px}
 :root{--spring:cubic-bezier(.34,1.56,.64,1);--bg:#0b0b0f;--card:rgba(255,255,255,.06);--ink:#f5f7ff;--mut:#8f98b3;--line:rgba(255,255,255,.12);--acc:#2563eb;--accl:#7aa5ff;--okbg:rgba(34,197,94,.2);--nobg:rgba(239,68,68,.2);--ok2:rgba(34,197,94,.1);--ok2l:rgba(34,197,94,.5)}
 body{background:#0b0b0f}
-body::before,body::after{content:"";position:fixed;width:560px;height:560px;border-radius:50%;filter:blur(40px);pointer-events:none;z-index:-1;animation:drift 20s ease-in-out infinite alternate}
+body::before,body::after{content:"";position:fixed;width:560px;height:560px;border-radius:50%;pointer-events:none;z-index:-1;animation:drift 20s ease-in-out infinite alternate;will-change:transform}
 body::before{left:-160px;top:-160px;background:radial-gradient(circle,rgba(37,99,235,.55),transparent 65%)}
 body::after{right:-180px;bottom:-180px;background:radial-gradient(circle,rgba(96,165,250,.35),transparent 65%);animation-delay:-8s}
 @keyframes drift{to{transform:translate(90px,70px) scale(1.18)}}
@@ -105,7 +105,7 @@ body::after{right:-180px;bottom:-180px;background:radial-gradient(circle,rgba(96
 .brand{letter-spacing:.24em;font-weight:600;font-size:17px}.brand .logo{animation:bob 6s ease-in-out infinite}
 .hero{display:grid;justify-items:center;gap:8px;text-align:center;margin:8px 0 22px}.hero .logo{width:130px;margin:0;animation:bob 6s ease-in-out infinite}
 .wm{font-weight:700;font-size:36px;letter-spacing:.3em;padding-left:.3em}.tag{font-size:11px;letter-spacing:.32em;color:var(--mut)}
-@keyframes in{from{opacity:0;transform:translateY(22px) scale(.97);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes rise{from{opacity:0;transform:translateY(26px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes bob{50%{transform:translateY(-5px)}}
 .view{animation-duration:.7s;animation-timing-function:cubic-bezier(.2,.9,.2,1)}
@@ -127,8 +127,38 @@ body::after{right:-180px;bottom:-180px;background:radial-gradient(circle,rgba(96
 .toast{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:50%;z-index:90;padding:12px 24px;border-radius:999px;font-weight:700;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.08));backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border:1px solid rgba(255,255,255,.28);animation:toast 2.8s var(--spring) both}
 @keyframes toast{0%{opacity:0;transform:translate(-50%,-30px) scale(.8)}12%,80%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-20px)}}
 .sw{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.sw span{color:var(--mut);font-size:14px}.pv{height:134px;display:grid;place-items:center}.sw .prev{width:100%}.prev:disabled{opacity:.4}
+
+/* ===== OTIMIZAÇÃO DE DESEMPENHO ===== */
+/* Blur só nos 2 elementos flutuantes; nos demais, fundo translúcido barato */
+.exam,.stat,.card,.qc,.opt,.nav,input,textarea,.prev,.chip,.sec,.fig svg,.grid2 .exam{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 6px 14px -10px rgba(0,0,0,.7)!important}
+.side{-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);box-shadow:0 8px 20px -12px rgba(0,0,0,.8)}
+.toast{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.opt{box-shadow:none!important}
+.exam,.opt,.prev,.chip{transition:transform .25s ease,border-color .25s,background .25s,opacity .25s}
+.exam:hover{transform:translateY(-3px)}.opt:not(:disabled):hover{transform:none}
+.grid2>*,.opt{animation-duration:.35s}
+.grid2>:nth-child(n+2),.opt:nth-of-type(n+2){animation-delay:0s!important}
+#pet svg{filter:none}
+.fico,.brand .logo,.hero .logo{animation:none}
+.view{contain:layout style}
+@media(max-width:820px){
+  /* celular: sem orbes, sem animações decorativas, sem sombras pesadas */
+  body::before,body::after{display:none}
+  body{background:radial-gradient(500px 360px at 10% -5%,rgba(37,99,235,.35),transparent 70%),#0b0b0f}
+  .side{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(18,20,32,.96);box-shadow:0 -4px 16px -8px rgba(0,0,0,.8)}
+  .toast{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(30,36,64,.96)}
+  .exam,.stat,.card,.qc,.opt,.nav,input,textarea,.prev,.chip,.sec{background:rgba(255,255,255,.07)!important;box-shadow:none!important}
+  .next{box-shadow:none}.ni.on{box-shadow:none;backdrop-filter:none}
+  .bar i{box-shadow:none}
+  .view{animation-duration:.25s}
+  .grid2>*,.opt{animation:none}
+  .exam:hover{transform:none}
+  .exp,.exp .in{transition-duration:.25s}
+  #pet svg{animation-duration:inherit}
+}
+@media(prefers-reduced-motion:reduce){body::before,body::after,#pet svg{animation:none!important}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Crect width='800' height='800' rx='180' fill='%230b0b0f'/%3E%3Cg transform='translate%28400 400%29 scale%282%29 translate%28-614 -238%29' fill='%232563eb'%3E%3Cpath d='M472 316L613 172L756 316H710L613 222L518 316Z'/%3E%3Cpath d='M548 316L613 247L683 316H636L613 292L588 316Z'/%3E%3Cpath d='M713 160Q717 184 741 188Q717 192 713 216Q709 192 685 188Q709 184 713 160Z'/%3E%3C/g%3E%3C/svg%3E">
 </head>
 <body>
@@ -224,13 +254,15 @@ async function savePet(){await sb.from("pet").upsert({user_id:me.id,pontos:PET.p
 function renderWho(){document.getElementById("who").innerHTML=`<div class="wn">${esc(me.nome)} · ${PET.pontos} pts</div><button class="ni" id="out">Sair</button>`;document.getElementById("out").onclick=async()=>{await sb.auth.signOut();login()}}
 function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2900)}
 function hop(){if(pet){const f=pet.firstChild;f.classList.add("hop");setTimeout(()=>f.classList.remove("hop"),800)}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else if(pet){last=performance.now();raf=requestAnimationFrame(loop)}});
 function killPet(){cancelAnimationFrame(raf);if(pet){pet.remove();pet=null}}
-function drawPet(){if(pet){pet.innerHTML='<div class="pf">'+petHtml(PET.vestindo,PW)+'</div><span class="zzz">z z z</span>'}}
+function drawPet(){if(pet){pdir=null;pet.innerHTML='<div class="pf">'+petHtml(PET.vestindo,PW)+'</div><span class="zzz">z z z</span>'}}
 function initPet(){
  killPet();pet=document.createElement("div");pet.id="pet";document.body.appendChild(pet);drawPet();
  const p=PET.pos;pst.mode=p&&p.rest?"rest":"wander";pst.x=p?Math.min(p.x,innerWidth-PW):innerWidth/2;pst.y=p?Math.min(p.y,innerHeight-PH):floorY();
  pet.onpointerdown=pdown;raf=requestAnimationFrame(loop);
 }
+let pdir=null;
 function loop(t){
  if(!pet)return;const dt=Math.min(50,t-last)/1000;last=t;
  if(!pst.drag&&pst.mode==="wander"){
@@ -242,7 +274,7 @@ function loop(t){
  const c=pst.drag?"drag":pst.mode==="rest"?"sleep":pst.act==="walk"?"walk":"idle";
  if(c!==pcls){pcls=c;pet.className=c}
  pet.style.transform=`translate(${pst.x}px,${pst.y}px)`;
- if(pet.firstChild)pet.firstChild.style.transform=`scaleX(${pst.dir})`;
+ if(pet.firstChild&&pst.dir!==pdir){pdir=pst.dir;pet.firstChild.style.transform=`scaleX(${pst.dir})`}
  raf=requestAnimationFrame(loop);
 }
 function pdown(e){e.preventDefault();pst.drag=true;pst.moved=false;pst.ox=e.clientX-pst.x;pst.oy=e.clientY-pst.y;pst.sx=e.clientX;pst.sy=e.clientY;pet.setPointerCapture(e.pointerId);pet.onpointermove=pmove;pet.onpointerup=pup}
@@ -366,7 +398,7 @@ function end(){
  {const N=Math.round(score/Q.length*100),el=document.getElementById("nt"),t0=performance.now();const f=t=>{const p=Math.min((t-t0)/900,1);el.textContent=Math.round(N*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 }
 document.querySelector(".brand").innerHTML=LOGO+"<span>PICLY</span>";
-boot();
+addEventListener('DOMContentLoaded',boot);
 </script>
 </body>
 </html>
