@@ -189,6 +189,15 @@ input,textarea{font-size:16px}
 .frame img{will-change:transform}
 @media(hover:none){.exam:hover{transform:none}}
 @media(max-width:820px){.side{transform:translateZ(0)}.view{animation-duration:.22s}.msg{animation:none}.mdl{padding:10px}.fr{width:min(240px,70vw);height:min(240px,70vw)}}
+.ni{position:relative}.ni .bd,.fr-row .bd{font-style:normal;background:#2563eb;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:6px}
+.addr{display:flex;gap:10px}.addr input{margin:0}.addr .next{width:auto;margin:0;flex:none;padding:12px 22px}
+.fr-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.card h3+.fr-row{border-top:0}.fr-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fr-row .prev{padding:10px 16px;font-size:14px}
+.ch{display:flex;align-items:center;gap:12px;margin:14px 0 0;font-size:22px}
+.msgs{min-height:42vh;padding:10px 0}
+.bub{max-width:80%;padding:10px 14px;border-radius:20px;margin:6px 0;line-height:1.4;word-break:break-word;white-space:pre-wrap;scroll-margin-bottom:130px}
+.bub.me{margin-left:auto;background:#2563eb;color:#fff;border-bottom-right-radius:6px}.bub.ou{background:rgba(255,255,255,.07);border:1px solid var(--line);border-bottom-left-radius:6px}
+.cbar{position:sticky;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:10px;padding:10px;border-radius:999px;background:rgba(10,19,48,.96);border:1px solid var(--line);margin-top:16px}.cbar input{margin:0;flex:1;border-radius:999px}.cbar .next{width:auto;margin:0;flex:none;padding:12px 22px}
+@media(max-width:820px){.cbar{bottom:calc(92px + env(safe-area-inset-bottom,0px))}.ni .bd{position:absolute;top:2px;right:4px;margin:0}.fr-row{flex-wrap:wrap}.fr-row b{flex:1 1 40%}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Crect width='800' height='800' rx='180' fill='%230b0b0f'/%3E%3Cg transform='translate%28400 400%29 scale%282%29 translate%28-614 -238%29' fill='%232563eb'%3E%3Cpath d='M472 316L613 172L756 316H710L613 222L518 316Z'/%3E%3Cpath d='M548 316L613 247L683 316H636L613 292L588 316Z'/%3E%3Cpath d='M713 160Q717 184 741 188Q717 192 713 216Q709 192 685 188Q709 184 713 160Z'/%3E%3C/g%3E%3C/svg%3E">
@@ -231,27 +240,28 @@ async function boot(){
  const{data:{session}}=await sb.auth.getSession();
  session?enter(session.user):login();
 }
-async function enter(u){IMG_OK=false;$.innerHTML='<div class="view"><div class="ld"></div></div>';
- const [g,a,x,ad,pf]=await Promise.all([sb.from("progress").select("*").eq("user_id",u.id),sb.from("attempts").select("*").eq("user_id",u.id).order("created_at"),sb.from("exams").select("*").order("ordem").order("created_at"),sb.from("admins").select("user_id").eq("user_id",u.id).maybeSingle(),sb.from("perfil").select("nome,descricao,foto_adj,banner_adj").eq("user_id",u.id).maybeSingle()]);
+async function enter(u){IMG_OK=false;FR={all:[]};UNREAD={};CH=null;clearInterval(CT);$.innerHTML='<div class="view"><div class="ld"></div></div>';
+ const [g,a,x,ad,pf]=await Promise.all([sb.from("progress").select("*").eq("user_id",u.id),sb.from("attempts").select("*").eq("user_id",u.id).order("created_at"),sb.from("exams").select("*").order("ordem").order("created_at"),sb.from("admins").select("user_id").eq("user_id",u.id).maybeSingle(),sb.from("perfil").select("nome,codigo,descricao,foto_adj,banner_adj").eq("user_id",u.id).maybeSingle()]);
  me={id:u.id,nome:(u.user_metadata&&u.user_metadata.nome)||u.email,admin:!!ad.data};EXAMS.length=BASE_N;(x.data||[]).forEach(r=>EXAMS.push(fromRow(r)));
  PR={};(g.data||[]).forEach(r=>PR[r.exam_id]=r.answers);AT=a.data||[];
  document.body.classList.remove("auth");
  PERFIL=(pf&&pf.data)||{};if(PERFIL.nome)me.nome=PERFIL.nome;
  renderWho();
  home();
- loadImgs();
+ loadImgs();loadFriends();live();
 }
 const EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',EYEOFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.9 10.9 0 0 1 12 19C5.5 19 1.5 12 1.5 12a19 19 0 0 1 4.6-5.4M9.9 5.2A10 10 0 0 1 12 5c6.5 0 10.5 7 10.5 7a19 19 0 0 1-2.2 3.2M1 1l22 22"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
 function login(sign){
  document.body.classList.add("auth");
  $.innerHTML=`<div class="view"><div class="hero">${LOGO}<div class="wm">PICLY</div><div class="tag">ESTUDE. EVOLUA. CONQUISTE.</div></div><p class="sub">${sign?"Crie sua conta":"Entre para salvar seu progresso"}</p>
- <form id="f">${sign?'<input name="nome" placeholder="Seu nome" required>':""}<input name="email" type="email" placeholder="E-mail" required><div class="pw"><input name="senha" id="pwi" type="password" placeholder="Senha (mínimo 6)" minlength="6" autocomplete="${sign?"new-password":"current-password"}" required><button type="button" class="eye" id="eye" aria-label="Mostrar senha" aria-pressed="false">${EYE}</button></div><button class="next on">${sign?"Criar conta":"Entrar"}</button><p id="er" class="er"></p></form>
+ <form id="f">${sign?'<input name="nome" placeholder="Nome de usuário (único)" minlength="3" maxlength="24" autocomplete="username" required>':""}<input name="email" type="email" placeholder="E-mail" required><div class="pw"><input name="senha" id="pwi" type="password" placeholder="Senha (mínimo 6)" minlength="6" autocomplete="${sign?"new-password":"current-password"}" required><button type="button" class="eye" id="eye" aria-label="Mostrar senha" aria-pressed="false">${EYE}</button></div><button class="next on">${sign?"Criar conta":"Entrar"}</button><p id="er" class="er"></p></form>
  <button class="back" id="sw">${sign?"Já tenho conta":"Criar conta"}</button></div>`;
  document.getElementById("sw").onclick=()=>login(!sign);
  {const pi=document.getElementById("pwi"),eb=document.getElementById("eye");eb.onpointerdown=e=>e.preventDefault();eb.onclick=()=>{const show=pi.type==="password";pi.type=show?"text":"password";eb.innerHTML=show?EYEOFF:EYE;eb.setAttribute("aria-label",show?"Ocultar senha":"Mostrar senha");eb.setAttribute("aria-pressed",show?"true":"false")}}
  document.getElementById("f").onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(ev.target)),er=document.getElementById("er");
+  if(sign){d.nome=(d.nome||"").trim();if(d.nome.length<3||d.nome.length>24)return er.textContent="O nome precisa ter de 3 a 24 caracteres.";const lv=await sb.rpc("nome_livre",{n:d.nome});if(lv.data===false)return er.textContent="Esse nome já está em uso. Escolha outro."}
   const r=sign?await sb.auth.signUp({email:d.email,password:d.senha,options:{data:{nome:d.nome}}}):await sb.auth.signInWithPassword({email:d.email,password:d.senha});
-  if(r.error)return er.textContent=r.error.message;
+  if(r.error)return er.textContent=sign&&/database error|nome/i.test(r.error.message)?"Esse nome já está em uso. Escolha outro.":r.error.message;
   r.data.session?enter(r.data.user):er.textContent="Conta criada! Confirme o e-mail e depois entre."};
 }
 async function save(){
@@ -362,13 +372,70 @@ function spark(){
  const W=260,H=70,X=k=>v.length>1?8+(W-16)*k/(v.length-1):W/2,Y=n=>H-8-(H-16)*n/100;
  return `<svg viewBox="0 0 ${W} ${H}"><polyline points="${v.map((n,k)=>X(k)+","+Y(n)).join(" ")}" fill="none" stroke="#7aa5ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${v.map((n,k)=>`<circle cx="${X(k)}" cy="${Y(n)}" r="4.5" fill="#7aa5ff"/>`).join("")}</svg>`;
 }
-function renderNav(){
- const inM=cur==="__m"||(cur&&cur[0]!=="_"),on=k=>cur===k?" on":"";
- const it=(k,ic,t)=>`<button class="ni${k==="__m"?(inM?" on":""):on(k)}" data-m="${k}">${ic}${t}</button>`;
- document.getElementById("nav").innerHTML=`<button class="ni${cur?"":" on"}" data-m="">${HOME}Início</button>`+it("__m",FOLD,"Matérias")+it("__d",DASH,"Desempenho")+it("__c",USERI,"Conta")+(me&&me.admin?it("__a",LOCK,"Admin"):"");
- document.querySelectorAll(".ni[data-m]").forEach(b=>b.onclick=()=>{({"":home,__m:materias,__d:dash,__c:conta,__a:admin})[b.dataset.m]()});
+function renderWho(){document.getElementById("who").innerHTML=`${avatar(36)}<div class="wn">${esc(me.nome)}</div><button class="ni" id="out">Sair</button>`;document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
+let FR={all:[]},UNREAD={},CH=null,CT=0,SEEN=new Set(),CHADD=null;
+const FRI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2c2.6 0 4.5 1.8 4.5 4.8"/></svg>';
+const badge=()=>FR.all.filter(f=>f.st==="pendente"&&!f.mine).length+Object.values(UNREAD).reduce((s,x)=>s+x,0);
+const ini=(n,sz)=>`<div class="av" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.42)}px">${esc(((n||"?").trim()[0]||"?").toUpperCase())}</div>`;
+async function loadFriends(){
+ const a=await sb.from("amizades").select("*").or(`de.eq.${me.id},para.eq.${me.id}`);if(a.error)return;
+ const rows=a.data||[],ids=[...new Set(rows.map(r=>r.de===me.id?r.para:r.de))],P={};
+ if(ids.length){const p=await sb.from("perfil").select("user_id,nome").in("user_id",ids);(p.data||[]).forEach(x=>P[x.user_id]=x)}
+ FR.all=rows.map(r=>{const u=r.de===me.id?r.para:r.de;return{id:r.id,uid:u,mine:r.de===me.id,st:r.status,p:P[u]||{nome:"Usuário"}}});
+ const m=await sb.from("mensagens").select("de").eq("para",me.id).eq("lida",false);UNREAD={};(m.data||[]).forEach(x=>UNREAD[x.de]=(UNREAD[x.de]||0)+1);
+ renderNav();
 }
-function renderWho(){document.getElementById("who").innerHTML=`${avatar(36)}<div class="wn">${esc(me.nome)}</div><button class="ni" id="out">Sair</button>`;document.getElementById("out").onclick=async()=>{await sb.auth.signOut();login()}}
+const refreshFr=()=>loadFriends().then(()=>{if(cur==="__f"&&!CH)amigosHtml()});
+function onMsg(m){if(CH===m.de){if(CHADD)CHADD(m);sb.from("mensagens").update({lida:true}).eq("id",m.id)}else{UNREAD[m.de]=(UNREAD[m.de]||0)+1;renderNav();if(cur==="__f"&&!CH)amigosHtml()}}
+function live(){sb.removeAllChannels();sb.channel("picly-"+me.id).on("postgres_changes",{event:"INSERT",schema:"public",table:"mensagens",filter:"para=eq."+me.id},p=>onMsg(p.new)).on("postgres_changes",{event:"*",schema:"public",table:"amizades",filter:"para=eq."+me.id},refreshFr).on("postgres_changes",{event:"*",schema:"public",table:"amizades",filter:"de=eq."+me.id},refreshFr).subscribe()}
+function amigos(){cur="__f";curP="";CH=null;clearInterval(CT);renderNav();amigosHtml();loadFriends().then(()=>{if(cur==="__f"&&!CH)amigosHtml()})}
+function amigosHtml(){
+ const F=FR.all,rec=F.filter(f=>f.st==="pendente"&&!f.mine),env=F.filter(f=>f.st==="pendente"&&f.mine),ami=F.filter(f=>f.st==="aceita");
+ const row=(f,b)=>`<div class="fr-row">${ini(f.p.nome,42)}<b>${esc(f.p.nome)}</b>${b}</div>`;
+ $.innerHTML=`<div class="view wide"><h1>Amigos</h1><p class="sub">Seu código: <b>#${PERFIL.codigo||"—"}</b>. Seus amigos podem te achar pelo seu nome ou por esse código.</p>
+ <div class="card" style="margin-top:0"><h3>Adicionar amigo</h3><div class="addr"><input id="aq" placeholder="Nome de usuário ou #código" maxlength="40"><button class="next on" id="ab">Enviar pedido</button></div><p id="am" class="sub" style="margin:8px 0 0"></p></div>
+ ${rec.length?`<div class="card"><h3>Pedidos recebidos</h3>${rec.map(f=>row(f,`<button class="prev" data-a="${f.id}">Aceitar</button><button class="prev" data-r="${f.id}">Recusar</button>`)).join("")}</div>`:""}
+ ${env.length?`<div class="card"><h3>Pedidos enviados</h3>${env.map(f=>row(f,`<span class="sub" style="margin:0">Aguardando</span><button class="prev" data-r="${f.id}">Cancelar</button>`)).join("")}</div>`:""}
+ <div class="card"><h3>Seus amigos</h3>${ami.length?ami.map(f=>row(f,`${UNREAD[f.uid]?`<i class="bd">${UNREAD[f.uid]}</i>`:""}<button class="prev" data-c="${f.uid}">Conversar</button><button class="prev" data-x="${f.id}">Remover</button>`)).join(""):'<p class="sub" style="margin:0">Você ainda não adicionou amigos.</p>'}</div></div>`;
+ const g=id=>document.getElementById(id),am=g("am");
+ g("ab").onclick=async()=>{const q=g("aq").value.trim();if(!q)return;am.textContent="Procurando...";
+  const r=await sb.rpc("buscar_usuario",{q}),u=r.data&&r.data[0];
+  if(!u){am.textContent="Não encontrei ninguém com esse nome ou código.";return}
+  const ex=F.find(f=>f.uid===u.user_id);
+  if(ex){if(ex.st==="pendente"&&!ex.mine){await sb.from("amizades").update({status:"aceita"}).eq("id",ex.id);am.textContent="Vocês agora são amigos!";refreshFr();return}am.textContent=ex.st==="aceita"?"Vocês já são amigos.":"Você já enviou um pedido para essa pessoa.";return}
+  const i=await sb.from("amizades").insert({de:me.id,para:u.user_id});
+  if(i.error){am.textContent=i.error.code==="23505"?"Já existe um pedido entre vocês.":"Não consegui enviar: "+i.error.message;return}
+  am.textContent="Pedido enviado para "+u.nome+"!";g("aq").value="";refreshFr()};
+ g("aq").onkeydown=e=>{if(e.key==="Enter")g("ab").click()};
+ $.querySelectorAll("[data-a]").forEach(b=>b.onclick=async()=>{await sb.from("amizades").update({status:"aceita"}).eq("id",+b.dataset.a);refreshFr()});
+ $.querySelectorAll("[data-r]").forEach(b=>b.onclick=async()=>{await sb.from("amizades").delete().eq("id",+b.dataset.r);refreshFr()});
+ $.querySelectorAll("[data-x]").forEach(b=>b.onclick=async()=>{if(!confirm("Remover esse amigo? As mensagens continuam salvas."))return;await sb.from("amizades").delete().eq("id",+b.dataset.x);refreshFr()});
+ $.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>chat(b.dataset.c));
+}
+async function chat(uid){
+ const f=FR.all.find(x=>x.uid===uid&&x.st==="aceita");if(!f)return;
+ cur="__f";CH=uid;clearInterval(CT);SEEN=new Set();renderNav();
+ $.innerHTML=`<div class="view wide chat"><div class="crumb"><button class="back" id="cb">Amigos</button><span>›</span>${esc(f.p.nome)}</div><h2 class="ch">${ini(f.p.nome,40)}${esc(f.p.nome)}</h2><div class="msgs" id="mg"><p class="sub" id="ld2">Carregando...</p></div><div class="cbar"><input id="ci" placeholder="Escreva uma mensagem..." maxlength="500" autocomplete="off"><button class="next on" id="cs">Enviar</button></div></div>`;
+ const box=document.getElementById("mg"),inp=document.getElementById("ci");
+ const add=(m,sc)=>{if(SEEN.has(m.id))return;SEEN.add(m.id);const z=document.getElementById("ld2");if(z)z.remove();const d=document.createElement("div");d.className="bub "+(m.de===me.id?"me":"ou");d.textContent=m.texto;box.appendChild(d);if(sc!==false)d.scrollIntoView({block:"end"})};
+ CHADD=add;
+ document.getElementById("cb").onclick=amigos;
+ const send=async()=>{const t=inp.value.trim();if(!t)return;inp.value="";const r=await sb.from("mensagens").insert({de:me.id,para:uid,texto:t}).select().single();if(r.error){inp.value=t;alert("Não consegui enviar: "+r.error.message);return}add(r.data)};
+ document.getElementById("cs").onclick=send;inp.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}};
+ const h=await sb.from("mensagens").select("*").or(`and(de.eq.${me.id},para.eq.${uid}),and(de.eq.${uid},para.eq.${me.id})`).order("criado",{ascending:false}).limit(100);
+ if(CH!==uid)return;
+ const L=(h.data||[]).slice().reverse();
+ if(!L.length){const z=document.getElementById("ld2");if(z)z.textContent="Nenhuma mensagem ainda. Diga oi!"}
+ L.forEach(m=>add(m,false));if(box.lastElementChild)box.lastElementChild.scrollIntoView({block:"end"});
+ await sb.from("mensagens").update({lida:true}).eq("para",me.id).eq("de",uid).eq("lida",false);UNREAD[uid]=0;renderNav();
+ CT=setInterval(async()=>{if(CH!==uid)return clearInterval(CT);const mx=Math.max(0,...SEEN),n=await sb.from("mensagens").select("*").eq("de",uid).eq("para",me.id).gt("id",mx).order("id");(n.data||[]).forEach(m=>{add(m);sb.from("mensagens").update({lida:true}).eq("id",m.id)})},6000);
+}
+function renderNav(){
+ const inM=cur==="__m"||(cur&&cur[0]!=="_"),on=k=>cur===k?" on":"",nb=badge();
+ const it=(k,ic,t,b)=>`<button class="ni${k==="__m"?(inM?" on":""):on(k)}" data-m="${k}">${ic}${t}${b?`<i class="bd">${b}</i>`:""}</button>`;
+ document.getElementById("nav").innerHTML=`<button class="ni${cur?"":" on"}" data-m="">${HOME}Início</button>`+it("__m",FOLD,"Matérias")+it("__d",DASH,"Desempenho")+it("__f",FRI,"Amigos",nb)+it("__c",USERI,"Conta")+(me&&me.admin?it("__a",LOCK,"Admin"):"");
+ document.querySelectorAll(".ni[data-m]").forEach(b=>b.onclick=()=>{clearInterval(CT);CH=null;({"":home,__m:materias,__d:dash,__f:amigos,__c:conta,__a:admin})[b.dataset.m]()});
+}
 function home(){
  cur="";curP="";renderNav();
  const R=resumo(),A1=AT.filter((a,k)=>AT.findIndex(b=>b.exam_id===a.exam_id)===k),avg=A1.length?Math.round(A1.reduce((s,a)=>s+a.nota,0)/A1.length):0,taxa=R.na?Math.round(R.ok/R.na*100):0;
@@ -388,7 +455,7 @@ async function conta(){
  cur="__c";curP="";renderNav();
  if(!IMG_OK){$.innerHTML='<div class="view"><div class="ld"></div></div>';await loadImgs()}
  const E={foto:{src:PERFIL.foto||"",adj:PERFIL.foto_adj||null},banner:{src:PERFIL.banner||"",adj:PERFIL.banner_adj||null}};
- $.innerHTML=`<div class="view wide"><h1>Sua conta</h1><p class="sub">Edite seu nome, descrição, foto e banner. Depois, use o botão “Salvar alterações” lá embaixo.</p>
+ $.innerHTML=`<div class="view wide"><h1>Sua conta</h1><p class="sub">Edite seu nome, descrição, foto e banner. Depois, use o botão “Salvar alterações” lá embaixo.</p><p class="sub" style="margin-top:-8px">Seu código de amigo: <b>#${PERFIL.codigo||"—"}</b> · seu nome é único e ninguém mais pode usá-lo.</p>
  <div class="pcard"><div id="bp"></div><div class="phead"><div id="ap"></div></div></div>
  <div class="row wrap"><button class="prev" id="bb">Trocar banner</button><button class="prev" id="bj">Ajustar banner</button><button class="prev" id="ba">Trocar foto</button><button class="prev" id="bk2">Ajustar foto</button><button class="prev" id="br">Remover imagens</button></div>
  <p class="sub" style="font-size:13px;margin:0 0 4px">Dica: GIFs também funcionam (até 2 MB) e ficam animados.</p>
@@ -407,10 +474,10 @@ async function conta(){
  g("bk2").onclick=()=>E.foto.src?ajustar("foto",E.foto,draw):alert("Escolha uma foto primeiro.");
  g("br").onclick=()=>{E.foto={src:"",adj:null};E.banner={src:"",adj:null};E.dirty=1;draw()};
  g("sv").onclick=async()=>{
-  const nome=g("nm").value.trim()||me.nome,descricao=ds.value.trim().slice(0,160),ms=g("ms");ms.textContent="Salvando...";
+  const nome=g("nm").value.trim()||me.nome,descricao=ds.value.trim().slice(0,160),ms=g("ms");ms.textContent="Salvando...";if(nome.length<3||nome.length>24){ms.textContent="O nome precisa ter de 3 a 24 caracteres.";return}
   const row={nome,descricao,foto_adj:E.foto.adj,banner_adj:E.banner.adj};if(IMG_OK||E.dirty){row.foto=E.foto.src;row.banner=E.banner.src}
   const r=await sb.from("perfil").upsert({user_id:me.id,...row});
-  if(r.error){ms.textContent="Não consegui salvar: "+r.error.message;return}
+  if(r.error){ms.textContent=r.error.code==="23505"?"Esse nome já está em uso. Escolha outro.":"Não consegui salvar: "+r.error.message;return}
   await sb.auth.updateUser({data:{nome}});
   PERFIL={...PERFIL,...row};if(E.dirty)IMG_OK=true;me.nome=nome;renderWho();ms.textContent="Alterações salvas!";
  };
