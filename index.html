@@ -403,7 +403,8 @@ input,textarea{border-radius:999px;background:var(--p2)!important}textarea{borde
 #nav{flex-direction:column;flex:1;justify-content:flex-start;gap:8px;overflow:visible}
 .who{flex-direction:column;gap:8px}
 .side .ni{width:52px;height:52px;padding:0!important;justify-content:center;border-radius:16px!important}
-.side .ni svg{width:22px;height:22px}
+.side .ni svg,.side .who svg,.who .ni svg{display:block!important;width:22px;height:22px;flex:none;color:currentColor}
+.side .ni{color:var(--mut,#b9b4c9);position:relative}
 .side .ni .bd{position:absolute;top:2px;right:2px;margin:0}
 .ni .nt,.who .wn{display:none}
 .side .ni[title]:hover::after{content:attr(title);position:absolute;left:62px;top:50%;transform:translateY(-50%);background:var(--p1,#0b0d18);border:1px solid rgba(255,255,255,.15);color:#fff;padding:6px 12px;border-radius:999px;font-size:12px;white-space:nowrap;z-index:60}
