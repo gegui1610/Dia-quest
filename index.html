@@ -303,7 +303,8 @@ let ex,Q,i,ans,pw=0,seen=new Set(),prac=false;
 const LOGO='<svg class="logo" viewBox="460 150 310 175" fill="#2563eb" role="img" aria-label="Picly"><path d="M472 316L613 172L756 316H710L613 222L518 316Z"/><path d="M548 316L613 247L683 316H636L613 292L588 316Z"/><path d="M713 160Q717 184 741 188Q717 192 713 216Q709 192 685 188Q709 184 713 160Z"/></svg>';
 let deferredInstall=null;
 const INSTALL_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>';
-const isDesktopDevice=()=>!(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent))&&matchMedia('(min-width:821px)').matches;
+const isInstalledApp=()=>matchMedia('(display-mode:standalone)').matches||matchMedia('(display-mode:window-controls-overlay)').matches||navigator.standalone===true;
+const isDesktopDevice=()=>!isInstalledApp()&&!(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent))&&matchMedia('(min-width:821px)').matches;
 function refreshInstallButton(){['installApp','installAppLogin'].forEach(id=>{const b=document.getElementById(id);if(b)b.hidden=!isDesktopDevice()})}
 async function installPWA(b){if(!isDesktopDevice())return;if(!deferredInstall){alert("O Chrome ou Edge ainda não liberou a instalação automática. Aguarde alguns segundos, recarregue a página e verifique se você está usando o endereço HTTPS do site.");return}deferredInstall.prompt();const r=await deferredInstall.userChoice;deferredInstall=null;refreshInstallButton();if(r.outcome==="accepted"&&b)b.blur()}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;refreshInstallButton()});
