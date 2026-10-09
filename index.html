@@ -304,7 +304,8 @@ const LOGO='<svg class="logo" viewBox="460 150 310 175" fill="#2563eb" role="img
 let deferredInstall=null;
 const INSTALL_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>';
 const isDesktopDevice=()=>!(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent))&&matchMedia('(min-width:821px)').matches;
-function refreshInstallButton(){const b=document.getElementById('installApp');if(b)b.hidden=!deferredInstall||!isDesktopDevice()}
+function refreshInstallButton(){['installApp','installAppLogin'].forEach(id=>{const b=document.getElementById(id);if(b)b.hidden=!deferredInstall||!isDesktopDevice()})}
+async function installPWA(b){if(!deferredInstall)return;deferredInstall.prompt();const r=await deferredInstall.userChoice;deferredInstall=null;refreshInstallButton();if(r.outcome==="accepted"&&b)b.blur()}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;refreshInstallButton()});
 addEventListener('appinstalled',()=>{deferredInstall=null;refreshInstallButton()});
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
@@ -361,8 +362,8 @@ function login(sign){
  document.body.classList.add("auth");
  $.innerHTML=`<div class="view"><div class="hero">${LOGO}<div class="wm">PICLY</div><div class="tag">ESTUDE. EVOLUA. CONQUISTE.</div></div><p class="sub">${sign?"Crie sua conta":"Entre para salvar seu progresso"}</p>
  <form id="f">${sign?'<input name="nome" placeholder="Nome de usuário (único)" minlength="3" maxlength="24" autocomplete="username" required>':""}<input name="email" type="email" placeholder="E-mail" required><div class="pw"><input name="senha" id="pwi" type="password" placeholder="Senha (mínimo 6)" minlength="6" autocomplete="${sign?"new-password":"current-password"}" required><button type="button" class="eye" id="eye" aria-label="Mostrar senha" aria-pressed="false">${EYE}</button></div><button class="next on">${sign?"Criar conta":"Entrar"}</button><p id="er" class="er"></p></form>
- <button class="back" id="sw">${sign?"Já tenho conta":"Criar conta"}</button></div>`;
- document.getElementById("sw").onclick=()=>login(!sign);
+ <button class="back" id="sw">${sign?"Já tenho conta":"Criar conta"}</button><button class="ni install-app" id="installAppLogin" hidden>${INSTALL_ICON}<span>Baixar aplicativo</span></button></div>`;
+ document.getElementById("sw").onclick=()=>login(!sign);const il=document.getElementById("installAppLogin");if(il)il.onclick=()=>installPWA(il);refreshInstallButton();
  {const pi=document.getElementById("pwi"),eb=document.getElementById("eye");eb.onpointerdown=e=>e.preventDefault();eb.onclick=()=>{const show=pi.type==="password";pi.type=show?"text":"password";eb.innerHTML=show?EYEOFF:EYE;eb.setAttribute("aria-label",show?"Ocultar senha":"Mostrar senha");eb.setAttribute("aria-pressed",show?"true":"false")}}
  document.getElementById("f").onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(ev.target)),er=document.getElementById("er");
   if(sign){d.nome=(d.nome||"").trim();if(d.nome.length<3||d.nome.length>24)return er.textContent="O nome precisa ter de 3 a 24 caracteres.";const lv=await sb.rpc("nome_livre",{n:d.nome});if(lv.data===false)return er.textContent="Esse nome já está em uso. Escolha outro."}
@@ -492,7 +493,7 @@ function spark(){
  const W=260,H=70,X=k=>v.length>1?8+(W-16)*k/(v.length-1):W/2,Y=n=>H-8-(H-16)*n/100;
  return `<svg viewBox="0 0 ${W} ${H}"><polyline points="${v.map((n,k)=>X(k)+","+Y(n)).join(" ")}" fill="none" stroke="#7aa5ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${v.map((n,k)=>`<circle cx="${X(k)}" cy="${Y(n)}" r="4.5" fill="#7aa5ff"/>`).join("")}</svg>`;
 }
-function renderWho(){document.getElementById("who").innerHTML=`<button class="ni install-app" id="installApp" hidden>${INSTALL_ICON}<span>Baixar aplicativo</span></button>${avatar(36)}<div class="wn">${esc(me.nome)}</div><button class="ni" id="out">Sair</button>`;const ib=document.getElementById("installApp");if(ib)ib.onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();const r=await deferredInstall.userChoice;deferredInstall=null;refreshInstallButton();if(r.outcome==="accepted")ib.blur()};refreshInstallButton();document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
+function renderWho(){document.getElementById("who").innerHTML=`<button class="ni install-app" id="installApp" hidden>${INSTALL_ICON}<span>Baixar aplicativo</span></button>${avatar(36)}<div class="wn">${esc(me.nome)}</div><button class="ni" id="out">Sair</button>`;const ib=document.getElementById("installApp");if(ib)ib.onclick=()=>installPWA(ib);refreshInstallButton();document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
 let FR={all:[]},UNREAD={},CH=null,CT=0,SEEN=new Set(),CHADD=null;
 const FRI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2c2.6 0 4.5 1.8 4.5 4.8"/></svg>';
 const badge=()=>FR.all.filter(f=>f.st==="pendente"&&!f.mine).length+Object.values(UNREAD).reduce((s,x)=>s+x,0);
@@ -809,7 +810,7 @@ addEventListener('DOMContentLoaded',boot);
 </script>
 <script>
 if("serviceWorker" in navigator){
-  addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"]).catch(e=>console.warn("PWA indisponível:",e)));
+  addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(e=>console.warn("PWA indisponível:",e)));
 }
 </script>
 </body>
