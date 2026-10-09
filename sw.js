@@ -1,5 +1,5 @@
-const CACHE = 'picly-pwa-v1';
-const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-1024.png'];
+const CACHE = 'picly-pwa-v2';
+const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-1024.png', './assets/orb-aurora.svg', './assets/orb-violet.svg', './assets/orb-orange.svg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
