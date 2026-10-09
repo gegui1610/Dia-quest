@@ -1,4 +1,4 @@
-const CACHE = 'peakcly-pwa-v3';
+const CACHE = 'peakcly-pwa-v5';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-1024.png', './assets/orb-aurora.svg', './assets/orb-violet.svg', './assets/orb-orange.svg'];
 
 self.addEventListener('install', event => {
@@ -12,6 +12,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  if (/\.exe$/i.test(new URL(request.url).pathname)) return;
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request).then(response => {
       const copy = response.clone();

@@ -131,7 +131,6 @@ textarea{min-height:70px;resize:vertical}
 .challenge-pick{display:grid;gap:10px;margin:12px 0 16px}.challenge-pick .exam{min-height:0;min-height:88px;padding:16px;border-radius:20px}.challenge-pick .exam b{font-size:17px}.challenge-pick .exam span{font-size:13px}.challenge-crumb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--mut);font-size:13px;margin:8px 0 14px}.challenge-crumb button{background:none;border:0;color:var(--accl);padding:0;font:inherit}.challenge-choice{border:1px solid rgba(108,156,255,.42);border-radius:20px;padding:16px;background:rgba(37,99,235,.12);margin:12px 0 16px}.challenge-choice b{display:block;font-family:var(--hf);font-size:20px;margin-bottom:4px}.challenge-choice span{color:#a9b6d8;font-size:14px}
 
 .install-app{display:flex!important;align-items:center;gap:7px;color:var(--ink)!important;background:rgba(108,156,255,.16)!important;border:1px solid rgba(108,156,255,.35)!important;padding:9px 13px!important;font-size:13px!important}.install-app svg{width:17px;height:17px}.install-app[hidden]{display:none!important}
-@media(max-width:820px){.install-app{display:none!important}}
 
 /* ---------- desafios individuais ---------- */
 .challenge-btn{flex:none;padding:9px 13px!important;font-size:13px!important;color:var(--accl)!important;border-color:rgba(108,156,255,.4)!important}
@@ -426,30 +425,16 @@ const $=document.getElementById("app"),L="ABCDE";
 const ADMIN_EMAILS=["agaltryingtofindherself@gmail.com","gegui.sales@gmail.com"];
 let ex,Q,i,ans,pw=0,seen=new Set(),prac=false;
 const LOGO='<svg class="logo" viewBox="460 150 310 175" role="img" aria-label="Peakcly"><defs><linearGradient id="logoGrad" x1=".1" y1=".9" x2=".9" y2=".1"><stop stop-color="#ff5a32"/><stop offset=".43" stop-color="#ffb05c"/><stop offset=".72" stop-color="#8c6dff"/><stop offset="1" stop-color="#6f8cff"/></linearGradient></defs><g fill="url(#logoGrad)"><path d="M472 316L613 172L756 316H710L613 222L518 316Z"/><path d="M548 316L613 247L683 316H636L613 292L588 316Z"/><path d="M713 160Q717 184 741 188Q717 192 713 216Q709 192 685 188Q709 192 713 160Z"/></g></svg>';
-let deferredInstall=null;
 const INSTALL_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>';
 const isInstalledApp=()=>matchMedia('(display-mode:standalone)').matches||matchMedia('(display-mode:window-controls-overlay)').matches||navigator.standalone===true;
-const isDesktopDevice=()=>!isInstalledApp()&&!(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent))&&matchMedia('(min-width:821px)').matches;
-function refreshInstallButton(){['installApp','installAppLogin'].forEach(id=>{const b=document.getElementById(id);if(b)b.hidden=!isDesktopDevice()})}
-async function installPWA(b){
+const isDesktopDevice=()=>!isInstalledApp()&&!(/Android|iPhone|iPad|iPod|Mobile|Electron/i.test(navigator.userAgent));
+const isWindowsComputer=()=>navigator.userAgentData?.platform==='Windows'||/Windows NT/i.test(navigator.userAgent);
+function refreshInstallButton(){['installApp','installAppLogin'].forEach(id=>{const b=document.getElementById(id);if(b){b.hidden=!isDesktopDevice();b.title='Baixar e instalar aplicativo';b.setAttribute('aria-label','Baixar e instalar aplicativo');const t=b.querySelector('span');if(t)t.textContent='Baixar e instalar aplicativo'}})}
+function downloadWindowsApp(b){
  if(!isDesktopDevice())return;
- if(!deferredInstall){
-   const secure=window.isSecureContext;
-   const sw=('serviceWorker' in navigator);
-   const manifest=document.querySelector('link[rel="manifest"]');
-   let state=`Endereço: ${location.protocol}//${location.host}\nHTTPS/localhost seguro: ${secure?'sim':'não'}\nService worker suportado: ${sw?'sim':'não'}\nManifesto: ${manifest?new URL(manifest.href).pathname:'não encontrado'}`;
-   if(sw){try{const reg=await navigator.serviceWorker.getRegistration();state+=`\nService worker registrado: ${reg?'sim':'não'}${reg?.active?' (ativo)':''}`}catch(e){state+='\nNão foi possível consultar o service worker.'}}
-   alert(`O navegador ainda não disponibilizou a instalação automática.\n\n${state}\n\nNo Chrome ou Edge para computador, tente instalar pelo menu ⋮ → “Instalar Peakcly” ou “Salvar e compartilhar → Instalar página como aplicativo”. Se essa opção não aparecer, abra o endereço HTTPS publicado, aguarde o carregamento completo e confira em DevTools → Application se o manifesto e o service worker carregaram sem erros.`);
-   return;
- }
- const installEvent=deferredInstall;
- deferredInstall=null;
- try{await installEvent.prompt();const r=await installEvent.userChoice;if(r.outcome==="accepted"&&b)b.blur()}
- catch(e){console.warn('Não foi possível abrir o prompt de instalação:',e);alert('Não foi possível abrir a instalação automática. Tente pelo menu ⋮ do Chrome/Edge: “Instalar Peakcly”.')}
- finally{refreshInstallButton()}
+ if(!isWindowsComputer()){alert('O instalador .exe é exclusivo para Windows. Neste computador, continue usando o Peakcly pelo navegador.');return}
+ const a=document.createElement('a');a.href='https://github.com/gegui1610/Dia-quest/releases/download/v1.0.0/Peakcly-Setup-1.0.0.exe';a.download='Peakcly-Setup-1.0.0.exe';document.body.appendChild(a);a.click();a.remove();if(b)b.blur();
 }
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;refreshInstallButton()});
-addEventListener('appinstalled',()=>{deferredInstall=null;refreshInstallButton()});
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const keys=q=>q[2].split("").map(c=>L.indexOf(c));
 let cur="";
@@ -504,8 +489,8 @@ function login(sign){
  document.body.classList.add("auth");
  $.innerHTML=`<div class="view"><div class="hero">${LOGO}<div class="wm">PEAKCLY</div><div class="tag">ESTUDE. EVOLUA. CONQUISTE.</div></div><p class="sub">${sign?"Crie sua conta":"Entre para salvar seu progresso"}</p>
  <form id="f">${sign?'<input name="nome" placeholder="Nome de usuário (único)" minlength="3" maxlength="24" autocomplete="username" required>':""}<input name="email" type="email" placeholder="E-mail" required><div class="pw"><input name="senha" id="pwi" type="password" placeholder="Senha (mínimo 6)" minlength="6" autocomplete="${sign?"new-password":"current-password"}" required><button type="button" class="eye" id="eye" aria-label="Mostrar senha" aria-pressed="false">${EYE}</button></div><button class="next on">${sign?"Criar conta":"Entrar"}</button><p id="er" class="er"></p></form>
- <button class="back" id="sw">${sign?"Já tenho conta":"Criar conta"}</button><button class="ni install-app" id="installAppLogin" hidden>${INSTALL_ICON}<span>Baixar aplicativo</span></button></div>`;
- document.getElementById("sw").onclick=()=>login(!sign);const il=document.getElementById("installAppLogin");if(il)il.onclick=()=>installPWA(il);refreshInstallButton();
+ <button class="back" id="sw">${sign?"Já tenho conta":"Criar conta"}</button><button class="ni install-app" id="installAppLogin" hidden>${INSTALL_ICON}<span>Baixar e instalar aplicativo</span></button></div>`;
+ document.getElementById("sw").onclick=()=>login(!sign);const il=document.getElementById("installAppLogin");if(il)il.onclick=()=>downloadWindowsApp(il);refreshInstallButton();
  {const pi=document.getElementById("pwi"),eb=document.getElementById("eye");eb.onpointerdown=e=>e.preventDefault();eb.onclick=()=>{const show=pi.type==="password";pi.type=show?"text":"password";eb.innerHTML=show?EYEOFF:EYE;eb.setAttribute("aria-label",show?"Ocultar senha":"Mostrar senha");eb.setAttribute("aria-pressed",show?"true":"false")}}
  document.getElementById("f").onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(ev.target)),er=document.getElementById("er");
   if(sign){d.nome=(d.nome||"").trim();if(d.nome.length<3||d.nome.length>24)return er.textContent="O nome precisa ter de 3 a 24 caracteres.";const lv=await sb.rpc("nome_livre",{n:d.nome});if(lv.data===false)return er.textContent="Esse nome já está em uso. Escolha outro."}
@@ -638,7 +623,7 @@ function spark(){
  const W=260,H=70,X=k=>v.length>1?8+(W-16)*k/(v.length-1):W/2,Y=n=>H-8-(H-16)*n/100;
  return `<svg viewBox="0 0 ${W} ${H}"><polyline points="${v.map((n,k)=>X(k)+","+Y(n)).join(" ")}" fill="none" stroke="#7aa5ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${v.map((n,k)=>`<circle cx="${X(k)}" cy="${Y(n)}" r="4.5" fill="#7aa5ff"/>`).join("")}</svg>`;
 }
-function renderWho(){document.getElementById("who").innerHTML=`<button class="ni install-app" id="installApp" title="Baixar aplicativo" aria-label="Baixar aplicativo" hidden>${INSTALL_ICON}<span class="nt">Baixar aplicativo</span></button><button class="ni" id="out" title="Sair" aria-label="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l-5-5 5-5M5 12h12"/></svg><span class="nt">Sair</span></button>`;const ib=document.getElementById("installApp");if(ib)ib.onclick=()=>installPWA(ib);refreshInstallButton();document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
+function renderWho(){document.getElementById("who").innerHTML=`<button class="ni install-app" id="installApp" title="Baixar e instalar aplicativo" aria-label="Baixar e instalar aplicativo" hidden>${INSTALL_ICON}<span class="nt">Baixar e instalar aplicativo</span></button><button class="ni" id="out" title="Sair" aria-label="Sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l-5-5 5-5M5 12h12"/></svg><span class="nt">Sair</span></button>`;const ib=document.getElementById("installApp");if(ib)ib.onclick=()=>downloadWindowsApp(ib);refreshInstallButton();document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
 let FR={all:[]},UNREAD={},CH=null,CT=0,SEEN=new Set(),CHADD=null;
 const FRI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2c2.6 0 4.5 1.8 4.5 4.8"/></svg>';
 const badge=()=>FR.all.filter(f=>f.st==="pendente"&&!f.mine).length+Object.values(UNREAD).reduce((s,x)=>s+x,0);
