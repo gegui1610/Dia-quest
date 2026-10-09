@@ -450,7 +450,7 @@ async function perfilAmigo(uid){
  ov.querySelector("#pf").onclick=()=>ov.remove();const pc=ov.querySelector("#pc");if(pc)pc.onclick=()=>{ov.remove();chat(uid)};
 }
 async function loadStk(){
- const a=await sb.from("figurinhas").select("id,imagem").eq("dono",me.id).order("id",{ascending:false}).limit(60),b=await sb.from("fig_favs").select("figurinhas(id,imagem)").eq("user_id",me.id).limit(60),m=new Map();
+ const a=await sb.from("figurinhas").select("id,imagem").eq("dono",me.id).order("id",{ascending:false}).limit(40),b=await sb.from("fig_favs").select("figurinhas(id,imagem)").eq("user_id",me.id).limit(40),m=new Map();
  (a.data||[]).forEach(x=>m.set(x.id,{...x,own:true}));(b.data||[]).forEach(x=>{const f=x.figurinhas;if(f&&!m.has(f.id))m.set(f.id,{...f,own:false})});
  STK.list=[...m.values()];STK.list.forEach(x=>FIG[x.id]=x.imagem);
 }
@@ -515,9 +515,9 @@ async function chat(uid){
  TCH=sb.channel("t-"+[me.id,uid].sort().join("")).on("broadcast",{event:"typing"},p=>{if(p.payload&&p.payload.from===uid)showT()}).subscribe();
  inp.oninput=()=>{const n=Date.now();if(n-TSEND>1500){TSEND=n;if(TCH)TCH.send({type:"broadcast",event:"typing",payload:{from:me.id}})}};
  const drawStp=async()=>{if(!STK.list)await loadStk();
-  stp.innerHTML=`<div class="sth"><b>Minhas figurinhas</b><button class="prev" id="sed">${STK.edit?"Pronto":"Editar"}</button></div><div class="stg"><button class="stt add" id="sadd">+<small>Nova</small></button>${STK.list.map(x=>`<button class="stt" data-s="${x.id}"><img src="${blobUrl(x.imagem)}" alt="">${STK.edit?'<i class="x">×</i>':""}</button>`).join("")}</div><input type="file" id="sfile" accept="image/*" hidden>${STK.list.length?"":'<p class="sub" style="margin:10px 0 0">Toque em “Nova” para criar uma figurinha a partir de uma imagem.</p>'}`;
+  stp.innerHTML=`<div class="sth"><b>Minhas figurinhas</b><button class="prev" id="sed">${STK.edit?"Pronto":"Editar"}</button></div><div class="stg"><button class="stt add" id="sadd">+<small>Nova</small></button>${STK.list.map(x=>`<button class="stt" data-s="${x.id}"><img src="${blobUrl(x.imagem)}" alt="">${STK.edit?'<i class="x">×</i>':""}</button>`).join("")}</div><input type="file" id="sfile" accept="image/*" hidden>${STK.list.length?"":'<p class="sub" style="margin:10px 0 0">Toque em “Nova” para criar uma figurinha a partir de uma imagem ou de um GIF.</p>'}`;
   g("sadd").onclick=()=>g("sfile").click();
-  g("sfile").onchange=async e=>{const fl=e.target.files[0];e.target.value="";if(!fl)return;try{const d=await fitPng(fl,256),r=await sb.from("figurinhas").insert({imagem:d}).select().single();if(r.error)return alert("Não consegui salvar: "+r.error.message);STK.list=null;drawStp()}catch(x){alert("Não consegui ler essa imagem.")}};
+  g("sfile").onchange=async e=>{const fl=e.target.files[0];e.target.value="";if(!fl)return;try{let d;if(fl.type==="image/gif"){if(fl.size>409600)return alert("Esse GIF tem mais de 400 KB. Escolha um GIF menor: figurinhas são pequenas.");d=await readGif(fl)}else d=await fitPng(fl,256);const r=await sb.from("figurinhas").insert({imagem:d}).select().single();if(r.error)return alert("Não consegui salvar: "+r.error.message);STK.list=null;drawStp()}catch(x){alert("Não consegui ler essa imagem.")}};
   g("sed").onclick=()=>{STK.edit=!STK.edit;drawStp()};
   stp.querySelectorAll("[data-s]").forEach(b=>b.onclick=async()=>{const id=+b.dataset.s,x=STK.list.find(y=>y.id===id);
    if(STK.edit){if(!confirm("Remover essa figurinha?"))return;if(x.own)await sb.from("figurinhas").delete().eq("id",id);else await sb.from("fig_favs").delete().eq("figurinha_id",id);STK.list=null;drawStp();return}
