@@ -297,9 +297,19 @@ body:before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;bac
 .hero .logo{filter:drop-shadow(0 0 22px rgba(255,101,64,.3))}.auth main .view{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-color:rgba(255,255,255,.13)}input,textarea{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.14)}input:focus,textarea:focus{border-color:#ff936e;box-shadow:0 0 0 3px rgba(255,101,64,.16)}
 @media(max-width:820px){.shell{padding-left:14px;padding-right:14px}body:before{background-size:85vw,60vw;background-position:120% 2%,-30% 70%;opacity:.25}}
 
+
+/* ---------- Peakcly modular layout: composição inspirada na referência ---------- */
+.view.wide{max-width:1160px}.view.wide>h1{font-size:clamp(34px,6vw,72px);letter-spacing:-.05em;line-height:.98;margin:12px 0}.view.wide>p.sub{max-width:560px;font-size:16px}.side{border-radius:28px 28px 10px 28px;padding-left:18px}.brand{padding-left:4px}.brand .logo{width:46px}.ni{border-radius:14px}.ni.on{border-radius:16px}.who .ni{border-radius:13px}
+.grid2{gap:14px}.grid2>.exam,.grid2>.card,.grid2>.stat,.grid2>.quick{border-radius:18px 46px 18px 46px}.grid2>.exam:nth-child(2n){border-radius:46px 18px 46px 18px}.exam{min-height:196px;padding:25px 24px}.exam b{font-size:24px;letter-spacing:-.025em}.exam span{max-width:80%}.exam .fico{border-radius:16px 28px 16px 28px}.view:not(.wide) .exam{border-radius:15px 32px 15px 32px}.view:not(.wide) .exam:nth-child(2n){border-radius:32px 15px 32px 15px}
+.stat{border-radius:18px 42px 18px 42px}.stat:nth-child(2n){border-radius:42px 18px 42px 18px}.stat b{font-size:52px;letter-spacing:-.08em}.home-tools{gap:14px}.quick{min-height:212px;padding:24px;border-radius:18px 48px 18px 48px}.quick:nth-child(2){border-radius:48px 18px 48px 18px}.quick .qtop{align-items:flex-start}.quick h3{font-size:24px;letter-spacing:-.03em}
+.pcard{border-radius:18px 58px 18px 58px;min-height:150px}.phead{position:relative;z-index:1}.card{border-radius:18px 46px 18px 46px}.card:nth-of-type(2n){border-radius:46px 18px 46px 18px}.sec{border-radius:16px 38px 16px 38px}.sec div{padding:15px 4px}.hl{border-radius:18px 42px 18px 42px}.hls .hl:nth-child(2){border-radius:42px 18px 42px 18px}
+.row.wrap{align-items:center}.row.wrap .prev{border-radius:13px 26px 13px 26px}.row.wrap .prev:nth-child(2n){border-radius:26px 13px 26px 13px}.sbar{border-radius:18px 42px 18px 42px}.sbar .next{border-radius:14px 30px 14px 30px}.br{padding:11px 0}.br .tr,.tr{height:10px}.nav{border-radius:18px 36px 18px 36px}.nav .next{border-radius:14px 30px 14px 30px}.challenge-card{border-radius:18px 38px 18px 38px}.chhead{border-radius:18px 36px 18px 36px}.mdl .mbox{border-radius:18px 46px 18px 46px}
+.exam::after,.quick::after,.card::after{content:"";position:absolute;inset:10px;border:1px solid rgba(255,255,255,.05);border-radius:12px 36px 12px 36px;pointer-events:none}.quick,.card,.exam{position:relative}.quick:nth-child(2)::after,.grid2>.exam:nth-child(2n)::after{border-radius:36px 12px 36px 12px}
+@media(max-width:820px){.view.wide>h1{font-size:clamp(34px,11vw,54px)}.side{border-radius:20px 20px 8px 20px}.grid2>.exam,.grid2>.card,.grid2>.stat,.grid2>.quick,.grid2>.exam:nth-child(2n),.quick,.quick:nth-child(2),.pcard,.card,.card:nth-of-type(2n),.stat,.stat:nth-child(2n){border-radius:17px 34px 17px 34px}.exam{min-height:170px;padding:20px}.exam b{font-size:21px}.quick{min-height:184px;padding:20px}.stat b{font-size:42px}.exam::after,.quick::after,.card::after{inset:8px;border-radius:11px 25px 11px 25px}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Crect width='800' height='800' rx='180' fill='%230b0b0f'/%3E%3Cg transform='translate%28400 400%29 scale%282%29 translate%28-614 -238%29' fill='%232563eb'%3E%3Cpath d='M472 316L613 172L756 316H710L613 222L518 316Z'/%3E%3Cpath d='M548 316L613 247L683 316H636L613 292L588 316Z'/%3E%3Cpath d='M713 160Q717 184 741 188Q717 192 713 216Q709 192 685 188Q709 184 713 160Z'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute"><defs><radialGradient id="pg" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#cfe3ff" stop-opacity=".95"/><stop offset=".5" stop-color="#5b97ff" stop-opacity=".82"/><stop offset="1" stop-color="#2563eb" stop-opacity=".72"/></radialGradient><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8bbaff" stop-opacity=".85"/><stop offset="1" stop-color="#2f62e0" stop-opacity=".75"/></linearGradient></defs></svg><div class="shell"><aside class="side"><div class="brand"></div><nav id="nav"></nav><div class="who" id="who"></div></aside><main id="app"></main></div>
@@ -411,9 +421,9 @@ function dash(){
  const W=600,H=220,x0=36,x1=W-12,y0=H-26,y1=12,X=k=>AT1.length>1?x0+(x1-x0)*k/(AT1.length-1):(x0+x1)/2,Y=v=>y0-(y0-y1)*v/100;
  const grid=[0,25,50,75,100].map(v=>`<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.12)"/><text x="4" y="${Y(v)+4}" fill="#8e9bbd" font-size="11">${v}</text>`).join("");
  const line=AT1.map((a,k)=>`${X(k)},${Y(a.nota)}`).join(" ");
- const area=AT1.length>1?`<polygon points="${X(0)},${y0} ${line} ${X(AT1.length-1)},${y0}" fill="url(#g)"/>`:"";
- const dots=AT1.map((a,k)=>`<circle cx="${X(k)}" cy="${Y(a.nota)}" r="5" fill="#7aa5ff"><title>${a.nota}</title></circle>`).join("");
- const chart=AT1.length?`<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".5"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>${grid}${area}<polyline points="${line}" fill="none" stroke="#7aa5ff" stroke-width="3" stroke-linejoin="round"/>${dots}</svg>`:'<p class="sub">Conclua uma prova para ver sua evolução aqui.</p>';
+ const area=AT1.length>1?`<polygon points="${X(0)},${y0} ${line} ${X(AT1.length-1)},${y0}" fill="url(#auroraChart)"/>`:"";
+ const dots=AT1.map((a,k)=>`<circle cx="${X(k)}" cy="${Y(a.nota)}" r="5" fill="#ffb05c"><title>${a.nota}</title></circle>`).join("");
+ const chart=AT1.length?`<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="auroraChart" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a32" stop-opacity=".62"/><stop offset=".48" stop-color="#ffb05c" stop-opacity=".36"/><stop offset="1" stop-color="#8f72ff" stop-opacity=".05"/></linearGradient></defs>${grid}${area}<polyline points="${line}" fill="none" stroke="url(#auroraChart)" stroke-width="3" stroke-linejoin="round"/>${dots}</svg>`:'<p class="sub">Conclua uma prova para ver sua evolução aqui.</p>';
  const bars=EXAMS.map(e=>{const a=last[e.id];return `<div class="br"><span>${esc(e.titulo)}</span><div class="tr"><i style="width:${a?a.nota:0}%"></i></div><b>${a?a.nota:"–"}</b></div>`}).join("");
  $.innerHTML=`<div class="view wide"><h1>Seu desempenho</h1><p class="sub">Acompanhe sua evolução nas provas.</p><div class="grid2"><div class="stat"><span>Nota média</span><b>${avg}</b></div><div class="stat"><span>Taxa de acerto</span><b>${taxa}%</b></div><div class="stat"><span>Questões respondidas</span><b>${na}</b></div></div><div style="margin-top:16px">${hl}</div><div class="card"><h3>Desempenho por matéria</h3>${rows||'<p class="sub" style="margin:0">Nenhuma matéria com provas ainda.</p>'}</div><div class="card"><h3>Evolução das notas</h3>${chart}</div><div class="card"><h3>Nota oficial por prova</h3>${bars}</div></div>`;
 }
@@ -470,16 +480,16 @@ let PERFIL={};
 const USERI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
 const _u=new Map();const blobUrl=d=>{if(!d||d.slice(0,5)!=="data:")return d;if(_u.has(d))return _u.get(d);const i=d.indexOf(","),m=d.slice(5,i).split(";")[0],b=atob(d.slice(i+1)),a=new Uint8Array(b.length);for(let k=0;k<b.length;k++)a[k]=b.charCodeAt(k);const u=URL.createObjectURL(new Blob([a],{type:m}));_u.set(d,u);return u};
 let IMG_OK=false;
-async function loadImgs(){if(IMG_OK||!me)return;loadImgs.t=(loadImgs.t||0)+1;const r=await sb.from("perfil").select("foto,banner").eq("user_id",me.id).maybeSingle();if(r.error){if(loadImgs.t<3)setTimeout(loadImgs,2500);return}if(r.data){PERFIL.foto=r.data.foto||"";PERFIL.banner=r.data.banner||""}IMG_OK=true;renderWho();if(cur==="")home()}
+async function loadImgs(){if(IMG_OK||!me)return;loadImgs.t=(loadImgs.t||0)+1;const r=await sb.from("perfil").select("foto,foto_adj").eq("user_id",me.id).maybeSingle();if(r.error){if(loadImgs.t<3)setTimeout(loadImgs,2500);return}if(r.data){PERFIL.foto=r.data.foto||"";PERFIL.foto_adj=r.data.foto_adj||null}IMG_OK=true;renderWho();if(cur==="")home()}
 const adjS=a=>{a=a||{};return `transform:translate(${a.x||0}%,${a.y||0}%) scale(${a.z||1})`};
 const avatar=(sz,f)=>{f=f||{src:PERFIL.foto,adj:PERFIL.foto_adj};return `<div class="av ib" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.42)}px">${f.src?`<img src="${blobUrl(f.src)}" alt="" decoding="async" style="${adjS(f.adj)}">`:esc(((me.nome||"?").trim()[0]||"?").toUpperCase())}</div>`};
-const bannerHtml=(src,adj,id)=>`<div class="pban ib"${id?` id="${id}"`:""}>${src?`<img src="${blobUrl(src)}" alt="" decoding="async" style="${adjS(adj)}">`:""}</div>`;
+
 function fit(f,max){return new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);const fail=()=>{URL.revokeObjectURL(u);no(new Error("Formato de imagem não compatível com este navegador."))};im.onload=()=>{try{const r=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*r));c.height=Math.max(1,Math.round(im.height*r));const x=c.getContext("2d");x.clearRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL("image/jpeg",.9))}catch(e){fail()}};im.onerror=fail;im.src=u})}
 const readGif=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(f)});
 function ajustar(kind,st,done){
- const round=kind==="foto",ov=document.createElement("div");ov.className="mdl";
+ const ov=document.createElement("div");ov.className="mdl";
  const ad=st.adj=Object.assign({z:1,x:0,y:0},st.adj||{});
- ov.innerHTML=`<div class="mbox"><h3>Ajustar ${round?"foto":"banner"}</h3><p class="sub" style="margin:0 0 14px">Aceita JPG, PNG, GIF, WebP, AVIF, BMP, SVG e outros formatos reconhecidos pelo navegador. Arraste a imagem para escolher a posição e use o zoom para aproximar ou afastar.</p><div class="frame ${round?"fr":"fb"}" id="frm"><img src="${blobUrl(st.src)}" alt="" draggable="false"></div><label class="sub" for="zm">Zoom</label><input type="range" id="zm" min="1" max="3" step="0.01" value="${ad.z}"><div class="row"><button class="prev" id="rs">Centralizar</button><button class="next on" id="ok" style="flex:1;margin:0">Concluir</button></div></div>`;
+ ov.innerHTML=`<div class="mbox"><h3>Ajustar foto</h3><p class="sub" style="margin:0 0 14px">Aceita JPG, PNG, GIF, WebP, AVIF, BMP, SVG e outros formatos reconhecidos pelo navegador. Arraste a imagem para escolher a posição e use o zoom para aproximar ou afastar.</p><div class="frame fr"" id="frm"><img src="${blobUrl(st.src)}" alt="" draggable="false"></div><label class="sub" for="zm">Zoom</label><input type="range" id="zm" min="1" max="3" step="0.01" value="${ad.z}"><div class="row"><button class="prev" id="rs">Centralizar</button><button class="next on" id="ok" style="flex:1;margin:0">Concluir</button></div></div>`;
  document.body.appendChild(ov);
  const im=ov.querySelector("img"),fr=ov.querySelector("#frm"),zm=ov.querySelector("#zm");
  const put=()=>{const l=(ad.z-1)*50;ad.x=Math.max(-l,Math.min(l,ad.x));ad.y=Math.max(-l,Math.min(l,ad.y));im.style.cssText=adjS(ad)};put();
@@ -547,7 +557,7 @@ async function perfilAmigo(uid){
  const box=ov.firstChild;
  if(!p){box.innerHTML=`<h3>Perfil</h3><p class="sub">Não consegui abrir esse perfil.${err?" ("+esc(err)+")":""}</p><button class="prev" id="pf" style="width:100%">Fechar</button>`;ov.querySelector("#pf").onclick=()=>ov.remove();return}
  const ami=FR.all.some(f=>f.uid===uid&&f.st==="aceita")&&CH!==uid;
- box.innerHTML=`<div class="pcard" style="margin-bottom:10px">${bannerHtml(p.banner,p.banner_adj)}<div class="phead"><div class="av ib" style="width:84px;height:84px;font-size:34px">${p.foto?`<img src="${blobUrl(p.foto)}" alt="" style="${adjS(p.foto_adj)}">`:esc((p.nome||"?")[0].toUpperCase())}</div><div><h3 style="margin:0">${esc(p.nome||"")}</h3><span class="sub" style="margin:0">#${p.codigo||""} · <b class="${ONL.has(uid)?"on-t":""}">${ONL.has(uid)?"Online":"Offline"}</b></span></div></div></div><p class="sub">${esc(p.descricao||"Sem descrição.")}</p><div class="row"><button class="prev" id="pf" style="flex:1">Fechar</button>${ami?'<button class="next on" id="pc" style="flex:1;margin:0">Conversar</button>':""}</div>`;
+ box.innerHTML=`<div class="pcard" style="margin-bottom:10px"><div class="phead"><div class="av ib" style="width:84px;height:84px;font-size:34px">${p.foto?`<img src="${blobUrl(p.foto)}" alt="" style="${adjS(p.foto_adj)}">`:esc((p.nome||"?")[0].toUpperCase())}</div><div><h3 style="margin:0">${esc(p.nome||"")}</h3><span class="sub" style="margin:0">#${p.codigo||""} · <b class="${ONL.has(uid)?"on-t":""}">${ONL.has(uid)?"Online":"Offline"}</b></span></div></div></div><p class="sub">${esc(p.descricao||"Sem descrição.")}</p><div class="row"><button class="prev" id="pf" style="flex:1">Fechar</button>${ami?'<button class="next on" id="pc" style="flex:1;margin:0">Conversar</button>':""}</div>`;
  ov.querySelector("#pf").onclick=()=>ov.remove();const pc=ov.querySelector("#pc");if(pc)pc.onclick=()=>{ov.remove();chat(uid)};
 }
 async function loadStk(){
@@ -702,7 +712,7 @@ function home(){
  const nextTitle=next?(cnt(next)?"Continuar estudando":"Começar meu primeiro TD"):"Explorar matérias";
  const nextText=next?(cnt(next)?`${esc(next.titulo)} · ${cnt(next)}/${tot(next)} questões respondidas.`:"Escolha um TD e comece uma sessão rápida de estudos."):"Você concluiu tudo por aqui. Explore as matérias ou revise uma prova.";
  const best=R.best?`<div class="hl good"><div class="fico">${ico(R.best.m)}</div><div><small>Sua melhor matéria</small><b>${esc(R.best.m)}</b><span>Você acerta ${R.best.pct}% das questões</span></div></div>`:`<div class="card" style="margin-top:0"><h3>Sua melhor matéria</h3><p class="sub" style="margin:0">Responda pelo menos 5 questões para descobrir.</p></div>`;
- $.innerHTML=`<div class="view wide"><div class="pcard">${bannerHtml(PERFIL.banner,PERFIL.banner_adj)}<div class="phead">${avatar(92)}<div><h1>Olá, ${esc(me.nome)}!</h1><p class="sub" style="margin:4px 0 0">${esc(PERFIL.descricao||"Veja como você está indo.")}</p></div></div></div>
+ $.innerHTML=`<div class="view wide"><div class="pcard"><div class="phead">${avatar(92)}<div><h1>Olá, ${esc(me.nome)}!</h1><p class="sub" style="margin:4px 0 0">${esc(PERFIL.descricao||"Veja como você está indo.")}</p></div></div></div>
  <div class="grid2 home-stats"><div class="stat"><span>Nota média</span><b>${avg}</b></div><div class="stat"><span>Taxa de acerto</span><b>${taxa}%</b></div><div class="stat"><span>Provas concluídas</span><b>${A1.length}</b></div></div>
  <div class="home-tools"><div class="quick"><div class="qtop"><div class="fico">${next?FOLD:HOME}</div><div><span class="home-kicker">Seu próximo passo</span><h3>${next?esc(next.titulo):"Tudo pronto para começar"}</h3><p>${nextText}</p></div></div><button class="next on" data-home-start="${nextN}">${nextTitle}</button></div><div class="quick"><div class="qtop"><div class="fico">${DASH}</div><div><span class="home-kicker">Desafio rápido</span><h3>Teste seus conhecimentos</h3><p>Abra uma prova surpresa e veja como está hoje.</p></div></div><button class="prev" data-home-start="${quickN}" ${quickN<0?"disabled":""}>Fazer desafio</button></div></div>
  <div class="grid2" style="margin-top:16px">${best}<div class="card" style="margin-top:0"><h3>Suas últimas notas</h3>${spark()||'<p class="sub" style="margin:0">Ainda sem notas.</p>'}</div></div>
@@ -717,28 +727,27 @@ function materias(){
 async function conta(){
  cur="__c";curP="";renderNav();
  if(!IMG_OK){$.innerHTML='<div class="view"><div class="ld"></div></div>';await loadImgs()}
- const E={foto:{src:PERFIL.foto||"",adj:PERFIL.foto_adj||null},banner:{src:PERFIL.banner||"",adj:PERFIL.banner_adj||null}};
- $.innerHTML=`<div class="view wide"><h1>Sua conta</h1><p class="sub">Edite seu nome, descrição, foto e banner. Depois, use o botão “Salvar alterações” lá embaixo.</p><p class="sub" style="margin-top:-8px">Seu código de amigo: <b>#${PERFIL.codigo||"—"}</b> · seu nome é único e ninguém mais pode usá-lo.</p>
- <div class="pcard"><div id="bp"></div><div class="phead"><div id="ap"></div></div></div>
- <div class="row wrap"><button class="prev" id="bb">Trocar banner</button><button class="prev" id="bj">Ajustar banner</button><button class="prev" id="ba">Trocar foto</button><button class="prev" id="bk2">Ajustar foto</button><button class="prev" id="br">Remover imagens</button></div>
+ const E={foto:{src:PERFIL.foto||"",adj:PERFIL.foto_adj||null}};
+ $.innerHTML=`<div class="view wide"><h1>Sua conta</h1><p class="sub">Edite seu nome, descrição e foto de perfil.</p><p class="sub" style="margin-top:-8px">Seu código de amigo: <b>#${PERFIL.codigo||"—"}</b> · seu nome é único e ninguém mais pode usá-lo.</p>
+ <div class="pcard"><div class="phead"><div id="ap"></div></div></div>
+ <div class="row wrap"><button class="prev" id="ba">Trocar foto</button><button class="prev" id="bk2">Ajustar foto</button><button class="prev" id="br">Remover foto</button></div>
  <p class="sub" style="font-size:13px;margin:0 0 4px">Dica: GIFs também funcionam (até 2 MB) e ficam animados.</p>
- <input type="file" id="fb" accept="image/*,.jpg,.jpeg,.png,.gif,.webp,.avif,.bmp,.svg,.heic,.heif" hidden><input type="file" id="fa" accept="image/*,.jpg,.jpeg,.png,.gif,.webp,.avif,.bmp,.svg,.heic,.heif" hidden>
+ <input type="file" id="fa" accept="image/*,.jpg,.jpeg,.png,.gif,.webp,.avif,.bmp,.svg,.heic,.heif" hidden>
  <label class="sub" for="nm">Nome</label><input id="nm" value="${escA(me.nome)}" maxlength="40">
  <label class="sub" for="ds">Descrição <span id="ct"></span></label><textarea id="ds" maxlength="160" placeholder="Fale um pouco sobre você (opcional)">${esc(PERFIL.descricao||"")}</textarea>
  <div class="sbar"><button class="next on" id="sv">Salvar alterações</button><span id="ms" class="sub"></span></div></div>`;
  const g=id=>document.getElementById(id),ds=g("ds");
- const draw=()=>{g("bp").outerHTML=bannerHtml(E.banner.src,E.banner.adj,"bp");g("ap").innerHTML=avatar(92,E.foto)};draw();
+ const draw=()=>{g("ap").innerHTML=avatar(92,E.foto)};draw();
  const cnt2=()=>{g("ct").textContent=ds.value.length+"/160"};cnt2();ds.oninput=cnt2;
  const pick=(kind,max,btn,inp)=>{g(btn).onclick=()=>inp.click();inp.onchange=async()=>{const f=inp.files[0];inp.value="";if(!f)return;
   try{const ext=(f.name||"").toLowerCase();const isImage=f.type.startsWith("image/")||/\.(jpe?g|png|gif|webp|avif|bmp|svg|heic|heif)$/i.test(ext);if(!isImage)return alert("Escolha um arquivo de imagem.");let src;if(f.type==="image/gif"||/\.gif$/i.test(ext)){if(f.size>2097152)return alert("Esse GIF tem mais de 2 MB. Escolha um menor.");src=await readGif(f)}else src=await fit(f,max);
    E[kind]={src,adj:{z:1,x:0,y:0}};E.dirty=1;draw();ajustar(kind,E[kind],draw)}catch(e){alert("Não consegui ler essa imagem.")}}};
- pick("banner",1400,"bb",g("fb"));pick("foto",600,"ba",g("fa"));
- g("bj").onclick=()=>E.banner.src?ajustar("banner",E.banner,draw):alert("Escolha um banner primeiro.");
+ pick("foto",600,"ba",g("fa"));
  g("bk2").onclick=()=>E.foto.src?ajustar("foto",E.foto,draw):alert("Escolha uma foto primeiro.");
- g("br").onclick=()=>{E.foto={src:"",adj:null};E.banner={src:"",adj:null};E.dirty=1;draw()};
+ g("br").onclick=()=>{E.foto={src:"",adj:null};E.dirty=1;draw()};
  g("sv").onclick=async()=>{
   const nome=g("nm").value.trim()||me.nome,descricao=ds.value.trim().slice(0,160),ms=g("ms");ms.textContent="Salvando...";if(nome.length<3||nome.length>24){ms.textContent="O nome precisa ter de 3 a 24 caracteres.";return}
-  const row={nome,descricao,foto_adj:E.foto.adj,banner_adj:E.banner.adj};if(IMG_OK||E.dirty){row.foto=E.foto.src;row.banner=E.banner.src}
+  const row={nome,descricao,foto_adj:E.foto.adj};if(IMG_OK||E.dirty){row.foto=E.foto.src}
   const r=await sb.from("perfil").upsert({user_id:me.id,...row});
   if(r.error){ms.textContent=r.error.code==="23505"?"Esse nome já está em uso. Escolha outro.":"Não consegui salvar: "+r.error.message;return}
   await sb.auth.updateUser({data:{nome}});
