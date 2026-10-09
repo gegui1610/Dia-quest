@@ -130,6 +130,9 @@ textarea{min-height:70px;resize:vertical}
 
 .challenge-pick{display:grid;gap:10px;margin:12px 0 16px}.challenge-pick .exam{min-height:0;min-height:88px;padding:16px;border-radius:20px}.challenge-pick .exam b{font-size:17px}.challenge-pick .exam span{font-size:13px}.challenge-crumb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--mut);font-size:13px;margin:8px 0 14px}.challenge-crumb button{background:none;border:0;color:var(--accl);padding:0;font:inherit}.challenge-choice{border:1px solid rgba(108,156,255,.42);border-radius:20px;padding:16px;background:rgba(37,99,235,.12);margin:12px 0 16px}.challenge-choice b{display:block;font-family:var(--hf);font-size:20px;margin-bottom:4px}.challenge-choice span{color:#a9b6d8;font-size:14px}
 
+.install-app{display:flex!important;align-items:center;gap:7px;color:var(--ink)!important;background:rgba(108,156,255,.16)!important;border:1px solid rgba(108,156,255,.35)!important;padding:9px 13px!important;font-size:13px!important}.install-app svg{width:17px;height:17px}.install-app[hidden]{display:none!important}
+@media(max-width:820px){.install-app{display:none!important}}
+
 /* ---------- desafios individuais ---------- */
 .challenge-btn{flex:none;padding:9px 13px!important;font-size:13px!important;color:var(--accl)!important;border-color:rgba(108,156,255,.4)!important}
 .challenge-card{width:min(340px,88%);padding:14px 16px;border:1px solid rgba(108,156,255,.42);border-radius:20px;background:linear-gradient(145deg,rgba(37,99,235,.22),rgba(10,19,48,.96));line-height:1.4}
@@ -298,6 +301,12 @@ const $=document.getElementById("app"),L="ABCDE";
 const ADMIN_EMAILS=["agaltryingtofindherself@gmail.com","gegui.sales@gmail.com"];
 let ex,Q,i,ans,pw=0,seen=new Set(),prac=false;
 const LOGO='<svg class="logo" viewBox="460 150 310 175" fill="#2563eb" role="img" aria-label="Picly"><path d="M472 316L613 172L756 316H710L613 222L518 316Z"/><path d="M548 316L613 247L683 316H636L613 292L588 316Z"/><path d="M713 160Q717 184 741 188Q717 192 713 216Q709 192 685 188Q709 184 713 160Z"/></svg>';
+let deferredInstall=null;
+const INSTALL_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>';
+const isDesktopDevice=()=>!(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent))&&matchMedia('(min-width:821px)').matches;
+function refreshInstallButton(){const b=document.getElementById('installApp');if(b)b.hidden=!deferredInstall||!isDesktopDevice()}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;refreshInstallButton()});
+addEventListener('appinstalled',()=>{deferredInstall=null;refreshInstallButton()});
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const keys=q=>q[2].split("").map(c=>L.indexOf(c));
 let cur="";
@@ -483,7 +492,7 @@ function spark(){
  const W=260,H=70,X=k=>v.length>1?8+(W-16)*k/(v.length-1):W/2,Y=n=>H-8-(H-16)*n/100;
  return `<svg viewBox="0 0 ${W} ${H}"><polyline points="${v.map((n,k)=>X(k)+","+Y(n)).join(" ")}" fill="none" stroke="#7aa5ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${v.map((n,k)=>`<circle cx="${X(k)}" cy="${Y(n)}" r="4.5" fill="#7aa5ff"/>`).join("")}</svg>`;
 }
-function renderWho(){document.getElementById("who").innerHTML=`${avatar(36)}<div class="wn">${esc(me.nome)}</div><button class="ni" id="out">Sair</button>`;document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
+function renderWho(){document.getElementById("who").innerHTML=`<button class="ni install-app" id="installApp" hidden>${INSTALL_ICON}<span>Baixar aplicativo</span></button>${avatar(36)}<div class="wn">${esc(me.nome)}</div><button class="ni" id="out">Sair</button>`;const ib=document.getElementById("installApp");if(ib)ib.onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();const r=await deferredInstall.userChoice;deferredInstall=null;refreshInstallButton();if(r.outcome==="accepted")ib.blur()};refreshInstallButton();document.getElementById("out").onclick=async()=>{clearInterval(CT);sb.removeAllChannels();await sb.auth.signOut();login()}}
 let FR={all:[]},UNREAD={},CH=null,CT=0,SEEN=new Set(),CHADD=null;
 const FRI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2c2.6 0 4.5 1.8 4.5 4.8"/></svg>';
 const badge=()=>FR.all.filter(f=>f.st==="pendente"&&!f.mine).length+Object.values(UNREAD).reduce((s,x)=>s+x,0);
