@@ -380,7 +380,8 @@ function dash(){
 function admin(){
  cur="__a";renderNav();
  const L2=EXAMS.map((e,n)=>[e,n]).filter(x=>x[0].dbid);
- $.innerHTML=`<div class="view wide"><h1>Admin</h1><p class="sub">Edite ou remova os TDs e provas que já estão cadastrados. A criação de novos TDs foi desativada.</p><div class="grid2">${L2.map(([e,n])=>`<div class="exam"><b>${esc(e.titulo)}</b><span>${esc(e.materia)}${e.pasta?" › "+esc(e.pasta):""}</span><div class="row"><button class="prev" data-e="${n}">Editar</button><button class="prev" data-d="${n}">Apagar</button></div></div>`).join("")||'<p class="sub">Nada cadastrado por aqui ainda.</p>'}</div></div>`;
+ $.innerHTML=`<div class="view wide"><h1>Admin</h1><p class="sub">Crie, edite ou remova TDs e provas. Os novos TDs seguem o mesmo formato dos que já existem.</p><button class="next on" id="nw" style="max-width:280px;margin:0 0 16px">+ Novo TD / prova</button><div class="grid2">${L2.map(([e,n])=>`<div class="exam"><b>${esc(e.titulo)}</b><span>${esc(e.materia)}${e.pasta?" › "+esc(e.pasta):""}</span><div class="row"><button class="prev" data-e="${n}">Editar</button><button class="prev" data-d="${n}">Apagar</button></div></div>`).join("")||'<p class="sub">Nada cadastrado por aqui ainda.</p>'}</div></div>`;
+ document.getElementById("nw").onclick=()=>editor(null);
  $.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>editor(EXAMS[+b.dataset.e]));
  $.querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{const e=EXAMS[+b.dataset.d];if(!confirm("Apagar "+e.titulo+"? O progresso de todos nessa prova some."))return;const r=await sb.from("exams").delete().eq("id",e.dbid);if(r.error)return alert(r.error.message);EXAMS.splice(+b.dataset.d,1);admin()});
 }
@@ -394,44 +395,26 @@ function cleanSvg(t){t=String(t||"").trim();if(!t)return"";if(!/xmlns=/.test(t))
   if(!r.getAttribute("stroke-linejoin"))r.setAttribute("stroke-linejoin","round");
   d.querySelectorAll("rect").forEach(n=>{if(!n.hasAttribute("rx"))n.setAttribute("rx","6")});
   return new XMLSerializer().serializeToString(r)}catch(_){return""}}
-function editor(e){
+function figHtml(f){const v=String(f||"");return v.startsWith("IMG:")?`<img src="${escA(v.slice(4))}" alt="Imagem da questão" loading="lazy">`:cleanSvg(v)}
+ function editor(e){
  const flat=e?e.temas.flatMap(t=>t[1].map(q=>({q:q[0],a:q[1],c:q[2],x:q[3],f:q[4]||""}))):[];
- const card=o=>`<div class="qc"><textarea class="qq" placeholder="Enunciado">${esc(o.q||"")}</textarea>${[0,1,2,3,4].map(k=>`<input class="qa" placeholder="Alternativa ${L[k]}" value="${escA((o.a||[])[k]||"")}">`).join("")}<input class="qk" placeholder="Letra certa (ex.: C)" maxlength="5" value="${escA(o.c||"")}"><textarea class="qx" placeholder="Explicação">${esc(o.x||"")}</textarea><textarea class="qf" placeholder="Figura em SVG (opcional)">${esc(o.f||"")}</textarea><div class="fig qp">${o.f?cleanSvg(o.f):""}</div><button class="prev rm">Remover questão</button></div>`;
+ const card=o=>{const f=String(o.f||""),img=f.startsWith("IMG:")?f:"";return `<div class="qc"${img?` data-image="${escA(img)}"`:""}><textarea class="qq" placeholder="Enunciado">${esc(o.q||"")}</textarea>${[0,1,2,3,4].map(k=>`<input class="qa" placeholder="Alternativa ${L[k]}" value="${escA((o.a||[])[k]||"")}">`).join("")}<input class="qk" placeholder="Letra certa (ex.: C)" maxlength="5" value="${escA(o.c||"")}"><textarea class="qx" placeholder="Explicação">${esc(o.x||"")}</textarea><textarea class="qf" placeholder="Figura em SVG (opcional)">${esc(img?"":f)}</textarea><label class="sub qpick">Imagem da questão (opcional)<input class="qi" type="file" accept="image/*,.jpg,.jpeg,.png,.gif,.webp,.avif,.bmp,.svg,.heic,.heif"></label><div class="fig qp">${figHtml(f)}</div><button class="prev rm">Remover questão</button></div>`};
  const opt=a=>[...new Set(a.filter(Boolean))].map(x=>`<option value="${escA(x)}">`).join("");
- $.innerHTML=`<div class="view wide"><div class="crumb"><button class="back" id="b">Admin</button></div><h1>Editar TD / prova</h1>
+ $.innerHTML=`<div class="view wide"><div class="crumb"><button class="back" id="b">Admin</button></div><h1>${e?"Editar":"Novo"} TD / prova</h1>
  <input id="ma" list="lm" placeholder="Matéria (ex.: Matemática)" value="${escA(e?e.materia:"")}"><datalist id="lm">${opt(allMats())}</datalist>
  <input id="pa" list="lp" placeholder="Pasta dentro da matéria (opcional)" value="${escA(e?e.pasta:"")}"><datalist id="lp">${opt(EXAMS.map(x=>x.pasta))}</datalist>
  <input id="ti" placeholder="Título (ex.: TD 9 — Trigonometria)" value="${escA(e?e.titulo:"")}"><input id="da" placeholder="Subtítulo (opcional)" value="${escA(e?e.data:"")}">
- <details class="map" open><summary>Importar TD com IA (PDF, foto ou texto)</summary><p class="sub" style="margin:8px 0">Envie o arquivo do TD. A IA monta as questões no formato do site e você confere antes de salvar.</p><input type="file" id="aif" accept="application/pdf,image/*,.txt"><textarea id="ait" placeholder="Ou cole aqui o texto do TD (opcional)"></textarea><button class="prev" id="aib">Formatar com IA</button><p class="sub" id="ais" style="margin:8px 0 0"></p></details>
  <details class="map"><summary>Colar questões em JSON</summary><textarea id="js" placeholder='[{"q":"Enunciado","a":["A","B","C","D","E"],"c":"B","x":"Explicação"}]'></textarea><button class="prev" id="lj">Carregar</button></details>
  <div id="ls">${flat.map(card).join("")}</div><div class="row"><button class="prev" id="aq">+ Questão</button></div><button class="next on" id="sv">Salvar</button></div>`;
  const ls=document.getElementById("ls");
- const get=()=>[...ls.querySelectorAll(".qc")].map(c=>({q:c.querySelector(".qq").value.trim(),a:[...c.querySelectorAll(".qa")].map(x=>x.value.trim()),c:c.querySelector(".qk").value.toUpperCase().replace(/[^A-E]/g,""),x:c.querySelector(".qx").value.trim(),f:cleanSvg(c.querySelector(".qf").value.trim())})).filter(o=>o.q);
+ const get=()=>[...ls.querySelectorAll(".qc")].map(c=>({q:c.querySelector(".qq").value.trim(),a:[...c.querySelectorAll(".qa")].map(x=>x.value.trim()),c:c.querySelector(".qk").value.toUpperCase().replace(/[^A-E]/g,""),x:c.querySelector(".qx").value.trim(),f:c.dataset.image||cleanSvg(c.querySelector(".qf").value.trim())})).filter(o=>o.q);
  document.getElementById("b").onclick=admin;
- ls.oninput=ev=>{if(ev.target.classList.contains("qf"))ev.target.closest(".qc").querySelector(".qp").innerHTML=cleanSvg(ev.target.value)};
+ ls.oninput=ev=>{if(ev.target.classList.contains("qf")){const c=ev.target.closest(".qc");c.removeAttribute("data-image");c.querySelector(".qp").innerHTML=cleanSvg(ev.target.value)}};
+ ls.onchange=async ev=>{if(!ev.target.classList.contains("qi"))return;const f=ev.target.files[0],c=ev.target.closest(".qc");ev.target.value="";if(!f)return;try{const ext=(f.name||"").toLowerCase();if(!(f.type.startsWith("image/")||/\.(jpe?g|png|gif|webp|avif|bmp|svg|heic|heif)$/i.test(ext)))return alert("Escolha um arquivo de imagem.");const src=await fit(f,900);c.dataset.image="IMG:"+src;c.querySelector(".qf").value="";c.querySelector(".qp").innerHTML=figHtml(c.dataset.image)}catch(_){alert("Não consegui ler essa imagem neste navegador.")}};
  ls.onclick=ev=>{if(ev.target.classList.contains("rm"))ev.target.closest(".qc").remove()};
  document.getElementById("aq").onclick=()=>ls.insertAdjacentHTML("beforeend",card({}));
  document.getElementById("lj").onclick=()=>{try{ls.innerHTML=JSON.parse(document.getElementById("js").value).map(card).join("")}catch(err){alert("JSON inválido: "+err.message)}};
 
- document.getElementById("aib").onclick=async()=>{
-  const fl=document.getElementById("aif").files[0],tx=document.getElementById("ait").value.trim(),st=document.getElementById("ais"),bt=document.getElementById("aib");
-  if(!fl&&!tx)return st.textContent="Escolha um arquivo ou cole o texto do TD.";
-  if(fl&&fl.size>8*1024*1024)return st.textContent="Arquivo maior que 8 MB. Divida o PDF em partes menores.";
-  bt.disabled=true;st.textContent="A IA está lendo o TD… pode levar até 1 minuto.";
-  try{
-   const body={text:tx};
-   if(fl){body.file={name:fl.name,type:fl.type||(/\.pdf$/i.test(fl.name)?"application/pdf":"text/plain"),data:await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]);r.onerror=no;r.readAsDataURL(fl)})}}
-   const r=await sb.functions.invoke("importar-td",{body});
-   if(r.error){let m=r.error.message;try{const j=await r.error.context.json();m=j.error||m}catch(_){}throw new Error(m)}
-   const d=r.data||{},qs=(d.questoes||[]).filter(o=>o&&o.q);
-   if(!qs.length)throw new Error("A IA não encontrou questões nesse arquivo.");
-   ls.insertAdjacentHTML("beforeend",qs.map(o=>card({...o,f:o.figura||""})).join(""));
-   const ti=document.getElementById("ti"),da=document.getElementById("da");
-   if(!ti.value.trim()&&d.titulo)ti.value=d.titulo;if(!da.value.trim()&&d.subtitulo)da.value=d.subtitulo;
-   const sg=qs.filter(o=>o.gabarito_da_ia).length;
-   st.textContent=qs.length+" questões adicionadas abaixo."+(sg?" "+sg+" não tinham gabarito no arquivo: a IA resolveu, confira a letra certa.":"")+" Revise e clique em Salvar.";
-  }catch(err){st.textContent="Não consegui importar: "+err.message}
-  bt.disabled=false};
  document.getElementById("sv").onclick=async()=>{
   const qs=get(),ti=document.getElementById("ti").value.trim(),ma=document.getElementById("ma").value.trim();
   if(!ma||!ti||!qs.length)return alert("Preencha matéria, título e pelo menos uma questão.");
@@ -717,7 +700,7 @@ function show(){
  const {t,q}=Q[i],K=keys(q),a=ans[i],done=a!==undefined;seen.add(i);
  const cls=k=>!done?"":k===a?(K.includes(a)?"ok":"no"):K.includes(k)?"rev":"dim";
  $.innerHTML=`<div class="view${done?" still":""}"><div class="top"><button class="back">‹ Voltar</button><div class="bar"><i style="width:${pw}%"></i></div><div class="cnt">${i+1}/${Q.length}</div></div>${prac?'<div class="prac">Modo treino · não altera sua nota</div>':""}
- <div class="tema">${esc(t)}</div><p class="q">${esc(q[0])}</p>${q[4]?`<div class="fig">${q[4]}</div>`:""}
+ <div class="tema">${esc(t)}</div><p class="q">${esc(q[0])}</p>${q[4]?`<div class="fig">${figHtml(q[4])}</div>`:""}
  ${q[1].map((o,k)=>`<button class="opt ${cls(k)}"${done?" disabled":""}><em>${L[k]}</em><span>${esc(o)}</span></button>`).join("")}
  <div class="exp${done?" on":""}"><div><div class="in"><b>Explicação</b>${esc(q[3])}</div></div></div>
  <div class="nav"><button class="prev"${i?"":" disabled"}>‹ Anterior</button><button class="next on${done?"":" skip"}">${nextLabel()}</button></div>${mapHtml()}</div>`;
