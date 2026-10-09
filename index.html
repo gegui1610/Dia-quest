@@ -307,6 +307,11 @@ body:before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;bac
 .exam::after,.quick::after,.card::after{content:"";position:absolute;inset:10px;border:1px solid rgba(255,255,255,.05);border-radius:12px 36px 12px 36px;pointer-events:none}.quick,.card,.exam{position:relative}.quick:nth-child(2)::after,.grid2>.exam:nth-child(2n)::after{border-radius:36px 12px 36px 12px}
 @media(max-width:820px){.view.wide>h1{font-size:clamp(34px,11vw,54px)}.side{border-radius:20px 20px 8px 20px}.grid2>.exam,.grid2>.card,.grid2>.stat,.grid2>.quick,.grid2>.exam:nth-child(2n),.quick,.quick:nth-child(2),.pcard,.card,.card:nth-of-type(2n),.stat,.stat:nth-child(2n){border-radius:17px 34px 17px 34px}.exam{min-height:170px;padding:20px}.exam b{font-size:21px}.quick{min-height:184px;padding:20px}.stat b{font-size:42px}.exam::after,.quick::after,.card::after{inset:8px;border-radius:11px 25px 11px 25px}}
 
+
+/* ---------- perfil sem banner: foto inteira e cartão equilibrado ---------- */
+.pcard .phead{margin:22px;align-items:center}.av img{object-fit:contain;background:#08080e}.phead .av{flex:none}
+@media(max-width:820px){.pcard .phead{margin:16px;align-items:center}.phead{gap:12px}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
