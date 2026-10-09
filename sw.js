@@ -1,4 +1,4 @@
-const CACHE = 'picly-pwa-v2';
+const CACHE = 'peakcly-pwa-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-1024.png', './assets/orb-aurora.svg', './assets/orb-violet.svg', './assets/orb-orange.svg'];
 
 self.addEventListener('install', event => {
